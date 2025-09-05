@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FapCoin </title>
+    <title>FapCoin Clicker</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -15,10 +15,10 @@
         body {
             font-family: 'Arial', sans-serif;
             text-align: center;
-            background: linear-gradient(135deg, #0c0c0c, #1a1a1a);
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
             margin: 0;
             padding: 20px;
-            color: #f2a900;
+            color: #e94560;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -38,7 +38,7 @@
             background: rgba(0, 0, 0, 0.7);
             border-radius: 25px;
             backdrop-filter: blur(5px);
-            border: 1px solid #f2a900;
+            border: 1px solid #e94560;
             z-index: 100;
         }
         
@@ -51,15 +51,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #f2a900;
+            color: #e94560;
             font-size: 20px;
-            border: 2px solid #f2a900;
+            border: 2px solid #e94560;
         }
         
         .balance {
             font-size: 20px;
             font-weight: bold;
-            text-shadow: 0 0 5px rgba(242, 169, 0, 0.7);
+            text-shadow: 0 0 5px rgba(233, 69, 96, 0.7);
         }
         
         .container {
@@ -74,15 +74,15 @@
         h1 {
             margin-top: 20px;
             margin-bottom: 30px;
-            text-shadow: 0 0 10px rgba(242, 169, 0, 0.5);
+            text-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
             font-size: 2.5rem;
-            color: #f2a900;
+            color: #e94560;
         }
         
         .coin {
             width: 180px;
             height: 180px;
-            background: radial-gradient(circle at 30% 30%, #f2a900, #b36b00);
+            background: radial-gradient(circle at 30% 30%, #e94560, #9c2c49);
             border-radius: 50%;
             margin: 0 auto;
             cursor: pointer;
@@ -91,22 +91,22 @@
             justify-content: center;
             font-size: 24px;
             font-weight: bold;
-            box-shadow: 0 0 35px rgba(242, 169, 0, 0.7);
+            box-shadow: 0 0 35px rgba(233, 69, 96, 0.7);
             transition: transform 0.1s, box-shadow 0.1s;
-            border: 5px solid #ffc44d;
-            color: #4d3800;
+            border: 5px solid #ff6b8a;
+            color: #fff;
             position: relative;
             margin-bottom: 40px;
         }
         
         .coin:active {
             transform: scale(0.95);
-            box-shadow: 0 0 15px rgba(242, 169, 0, 0.5);
+            box-shadow: 0 0 15px rgba(233, 69, 96, 0.5);
         }
         
         .click-effect {
             position: absolute;
-            color: #ffd166;
+            color: #ff8fa3;
             font-weight: bold;
             font-size: 22px;
             pointer-events: none;
@@ -131,7 +131,7 @@
             padding: 15px 25px;
             border-radius: 15px;
             margin-bottom: 30px;
-            border: 1px solid #f2a900;
+            border: 1px solid #e94560;
             width: 80%;
             max-width: 300px;
         }
@@ -150,7 +150,7 @@
             padding: 15px 0;
             background: rgba(0, 0, 0, 0.7);
             border-radius: 15px;
-            border: 1px solid #f2a900;
+            border: 1px solid #e94560;
             margin-top: 20px;
         }
         
@@ -165,7 +165,7 @@
         }
         
         .menu-item:hover {
-            background: rgba(242, 169, 0, 0.2);
+            background: rgba(233, 69, 96, 0.2);
         }
         
         .menu-icon {
@@ -179,41 +179,124 @@
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.9);
-            color: #f2a900;
+            color: #e94560;
             padding: 15px 25px;
             border-radius: 10px;
-            border: 1px solid #f2a900;
+            border: 1px solid #e94560;
             z-index: 1000;
             transition: bottom 0.5s ease-in-out;
             font-size: 18px;
         }
         
-        .FapCoin-bg {
+        .fapcoin-bg {
             position: absolute;
             opacity: 0.03;
             font-size: 300px;
             z-index: -1;
             user-select: none;
         }
+        
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid #e94560;
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 0 30px rgba(233, 69, 96, 0.5);
+        }
+        
+        .modal h2 {
+            margin-bottom: 20px;
+            color: #e94560;
+        }
+        
+        .modal p {
+            margin-bottom: 25px;
+            font-size: 18px;
+        }
+        
+        .subscribe-btn {
+            background: linear-gradient(135deg, #e94560, #9c2c49);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
+        }
+        
+        .subscribe-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(233, 69, 96, 0.6);
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #e94560;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .daily-bonus {
+            position: relative;
+        }
+        
+        .bonus-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #e94560;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
-    <div class="FapCoin-bg" style="top: 50px; left: 50px;">₿</div>
-    <div class="FapCoin-bg" style="bottom: 100px; right: 100px;">₿</div>
+    <div class="fapcoin-bg" style="top: 50px; left: 50px;">FAP</div>
+    <div class="fapcoin-bg" style="bottom: 100px; right: 100px;">FAP</div>
     
     <div class="header">
-        <div class="avatar">₿</div>
-        <div class="balance">Баланс: <span id="balance">0</span> ₿</div>
+        <div class="avatar">FC</div>
+        <div class="balance">Баланс: <span id="balance">0</span> FAP</div>
     </div>
     
     <div class="container">
-        <h1>FapCoin </h1>
+        <h1>FapCoin Clicker</h1>
         
         <div class="coin" id="coin">Нажми меня!</div>
         
         <div class="stats">
             <p><span>Всего кликов:</span> <span id="total-clicks">0</span></p>
-            <p><span>Заработано:</span> <span id="total-earned">0</span> ₿</p>
+            <p><span>Заработано:</span> <span id="total-earned">0</span> FAP</p>
             <p><span>Время игры:</span> <span id="play-time">00:00</span></p>
         </div>
         
@@ -226,10 +309,25 @@
                 <div class="menu-icon">⚙️</div>
                 <div>Улучшения</div>
             </div>
+            <div class="menu-item daily-bonus" id="daily-btn">
+                <div class="menu-icon">🎁</div>
+                <div>Ежедневный бонус</div>
+                <div class="bonus-badge">!</div>
+            </div>
         </div>
     </div>
 
     <div class="notification" id="notification">Пока недоступно</div>
+    
+    <!-- Модальное окно для ежедневного бонуса -->
+    <div class="modal" id="daily-modal">
+        <div class="modal-content">
+            <button class="close-modal" id="close-modal">×</button>
+            <h2>Ежедневный бонус</h2>
+            <p>Подпишитесь на наш канал, чтобы получить 1000 FAP монет!</p>
+            <button class="subscribe-btn" id="subscribe-btn">Подписаться</button>
+        </div>
+    </div>
 
     <script>
         let balance = 0;
@@ -244,7 +342,7 @@
         
         // Загрузка сохраненных данных
         function loadSavedData() {
-            const savedData = localStorage.getItem('FapCoinData');
+            const savedData = localStorage.getItem('fapcoinClickerData');
             if (savedData) {
                 const data = JSON.parse(savedData);
                 balance = data.balance || 0;
@@ -252,9 +350,9 @@
                 totalEarned = data.totalEarned || 0;
                 startTime = data.startTime || Date.now();
                 
-                document.getElementById('balance').textContent = balance;
+                document.getElementById('balance').textContent = balance.toFixed(1);
                 document.getElementById('total-clicks').textContent = totalClicks;
-                document.getElementById('total-earned').textContent = totalEarned;
+                document.getElementById('total-earned').textContent = totalEarned.toFixed(1);
             }
         }
         
@@ -266,12 +364,13 @@
                 totalEarned: totalEarned,
                 startTime: startTime
             };
-            localStorage.setItem('FapCoinData', JSON.stringify(data));
+            localStorage.setItem('fapcoinClickerData', JSON.stringify(data));
         }
         
         // Показ уведомления
-        function showNotification() {
+        function showNotification(message) {
             const notification = document.getElementById('notification');
+            notification.textContent = message || "Пока недоступно";
             notification.style.bottom = '50px';
             
             setTimeout(() => {
@@ -283,7 +382,7 @@
         function createClickEffect(x, y, amount) {
             const effect = document.createElement('div');
             effect.className = 'click-effect';
-            effect.textContent = `+${amount}₿`;
+            effect.textContent = `+${amount}FAP`;
             effect.style.left = `${x}px`;
             effect.style.top = `${y}px`;
             
@@ -310,15 +409,15 @@
             const clickX = event.clientX - rect.left;
             const clickY = event.clientY - rect.top;
             
-            // Случайное количество FapCoin от 0.001 до 0.01
-            const amount = (Math.random() * 0.009 + 0.001).toFixed(3);
-            balance += parseFloat(amount);
+            // Случайное количество FapCoin от 1 до 5
+            const amount = Math.floor(Math.random() * 5) + 1;
+            balance += amount;
             totalClicks++;
-            totalEarned += parseFloat(amount);
+            totalEarned += amount;
             
-            document.getElementById('balance').textContent = balance.toFixed(3);
+            document.getElementById('balance').textContent = balance;
             document.getElementById('total-clicks').textContent = totalClicks;
-            document.getElementById('total-earned').textContent = totalEarned.toFixed(3);
+            document.getElementById('total-earned').textContent = totalEarned;
             
             createClickEffect(event.pageX, event.pageY, amount);
             saveData();
@@ -329,6 +428,40 @@
             }
         }
         
+        // Открытие модального окна для ежедневного бонуса
+        function openDailyModal() {
+            document.getElementById('daily-modal').style.display = 'flex';
+        }
+        
+        // Закрытие модального окна
+        function closeModal() {
+            document.getElementById('daily-modal').style.display = 'none';
+        }
+        
+        // Обработка подписки на канал
+        function handleSubscribe() {
+            // Открываем канал в новом окне
+            window.open('https://t.me/+7ZFIsDpkKuk4YmRi', '_blank');
+            
+            // Начисляем 1000 FAP
+            balance += 1000;
+            totalEarned += 1000;
+            document.getElementById('balance').textContent = balance;
+            document.getElementById('total-earned').textContent = totalEarned;
+            
+            // Сохраняем данные
+            saveData();
+            
+            // Показываем уведомление
+            showNotification("Получено 1000 FAP за подписку!");
+            
+            // Закрываем модальное окно
+            closeModal();
+            
+            // Убираем значок с кнопки ежедневного бонуса
+            document.querySelector('.bonus-badge').style.display = 'none';
+        }
+        
         // Инициализация
         document.addEventListener('DOMContentLoaded', function() {
             loadSavedData();
@@ -337,11 +470,23 @@
             setInterval(updatePlayTime, 1000);
             
             // Обработчики для кнопок меню
-            document.getElementById('profile-btn').addEventListener('click', showNotification);
-            document.getElementById('upgrades-btn').addEventListener('click', showNotification);
+            document.getElementById('profile-btn').addEventListener('click', () => showNotification("Профиль пока недоступен"));
+            document.getElementById('upgrades-btn').addEventListener('click', () => showNotification("Улучшения пока недоступны"));
+            document.getElementById('daily-btn').addEventListener('click', openDailyModal);
             
             // Обработчик для монеты
             document.getElementById('coin').addEventListener('click', collectCoin);
+            
+            // Обработчики для модального окна
+            document.getElementById('close-modal').addEventListener('click', closeModal);
+            document.getElementById('subscribe-btn').addEventListener('click', handleSubscribe);
+            
+            // Закрытие модального окна при клике вне его
+            document.getElementById('daily-modal').addEventListener('click', function(event) {
+                if (event.target === this) {
+                    closeModal();
+                }
+            });
         });
         
         // Обработка события закрытия WebApp
