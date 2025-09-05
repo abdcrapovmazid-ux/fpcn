@@ -196,7 +196,7 @@
             user-select: none;
         }
         
-        /* Модальное окно */
+        /* Модальные окна */
         .modal {
             display: none;
             position: fixed;
@@ -231,7 +231,7 @@
             font-size: 18px;
         }
         
-        .subscribe-btn {
+        .btn {
             background: linear-gradient(135deg, #e94560, #9c2c49);
             color: white;
             border: none;
@@ -242,19 +242,16 @@
             transition: all 0.3s;
             font-weight: bold;
             box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
-            margin-bottom: 15px;
+            margin: 10px;
         }
         
-        .subscribe-btn:hover {
+        .btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(233, 69, 96, 0.6);
         }
         
-        .subscribe-btn:disabled {
+        .btn-secondary {
             background: linear-gradient(135deg, #8c8c8c, #4d4d4d);
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
         }
         
         .close-modal {
@@ -297,6 +294,66 @@
             font-weight: bold;
             color: #ff6b8a;
         }
+        
+        /* Форма вывода */
+        .withdraw-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+        
+        .input-group label {
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        .input-group input {
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 1px solid #e94560;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 16px;
+        }
+        
+        .conversion {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #ff8fa3;
+        }
+        
+        .profile-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .profile-item {
+            padding: 15px;
+            background: rgba(233, 69, 96, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(233, 69, 96, 0.3);
+        }
+        
+        .profile-item:hover {
+            background: rgba(233, 69, 96, 0.2);
+        }
+        
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -305,7 +362,7 @@
     
     <div class="header">
         <div class="avatar">FC</div>
-        <div class="balance">Баланс: <span id="balance">0</span> FAP</div>
+        <div class="balance"><span id="balance">0</span> FAP</div>
     </div>
     
     <div class="container">
@@ -341,11 +398,61 @@
     <!-- Модальное окно для ежедневного бонуса -->
     <div class="modal" id="daily-modal">
         <div class="modal-content">
-            <button class="close-modal" id="close-modal">×</button>
+            <button class="close-modal" id="close-daily-modal">×</button>
             <h2>Ежедневный бонус</h2>
             <p>Подпишитесь на наш канал, чтобы получить 1000 FAP монет!</p>
-            <button class="subscribe-btn" id="subscribe-btn">Подписаться</button>
+            <button class="btn" id="subscribe-btn">Подписаться</button>
             <div class="timer" id="timer">До следующего бонуса: <span id="countdown">24:00:00</span></div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно профиля -->
+    <div class="modal" id="profile-modal">
+        <div class="modal-content">
+            <button class="close-modal" id="close-profile-modal">×</button>
+            <h2>Профиль</h2>
+            <div class="profile-menu">
+                <div class="profile-item" id="withdraw-btn">
+                    Вывод средств
+                </div>
+                <div class="profile-item" id="transaction-history-btn">
+                    История операций (скоро)
+                </div>
+                <div class="profile-item" id="referral-btn">
+                    Реферальная программа (скоро)
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно подтверждения вывода -->
+    <div class="modal" id="withdraw-confirm-modal">
+        <div class="modal-content">
+            <button class="close-modal" id="close-withdraw-confirm-modal">×</button>
+            <h2>Вывод средств</h2>
+            <p>Вы действительно хотите вывести монеты?</p>
+            <div class="btn-group">
+                <button class="btn" id="confirm-withdraw-btn">Да</button>
+                <button class="btn btn-secondary" id="cancel-withdraw-btn">Нет</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно ввода суммы вывода -->
+    <div class="modal" id="withdraw-amount-modal">
+        <div class="modal-content">
+            <button class="close-modal" id="close-withdraw-amount-modal">×</button>
+            <h2>Вывод средств</h2>
+            <div class="withdraw-form">
+                <div class="input-group">
+                    <label for="withdraw-amount">Введите сумму вывода (FAP):</label>
+                    <input type="number" id="withdraw-amount" min="1" step="1" placeholder="0">
+                </div>
+                <div class="conversion" id="usdt-conversion">
+                    В USDT: 0.00 USDT
+                </div>
+                <button class="btn" id="process-withdraw-btn">Вывести</button>
+            </div>
         </div>
     </div>
 
@@ -403,13 +510,11 @@
             if (lastBonusTime === 0 || timeSinceLastBonus >= twentyFourHours) {
                 // Бонус доступен
                 document.getElementById('bonus-badge').style.display = 'flex';
-                document.getElementById('subscribe-btn').disabled = false;
                 clearInterval(countdownInterval);
                 document.getElementById('countdown').textContent = "00:00:00";
             } else {
                 // Бонус недоступен, запускаем таймер
                 document.getElementById('bonus-badge').style.display = 'none';
-                document.getElementById('subscribe-btn').disabled = true;
                 startCountdown(twentyFourHours - timeSinceLastBonus);
             }
         }
@@ -424,7 +529,6 @@
                 if (timeLeft <= 0) {
                     clearInterval(countdownInterval);
                     document.getElementById('bonus-badge').style.display = 'flex';
-                    document.getElementById('subscribe-btn').disabled = false;
                     document.getElementById('countdown').textContent = "00:00:00";
                     return;
                 }
@@ -500,9 +604,38 @@
             checkBonusAvailability();
         }
         
-        // Закрытие модального окна
-        function closeModal() {
-            document.getElementById('daily-modal').style.display = 'none';
+        // Открытие модального окна профиля
+        function openProfileModal() {
+            document.getElementById('profile-modal').style.display = 'flex';
+        }
+        
+        // Открытие модального окна подтверждения вывода
+        function openWithdrawConfirmModal() {
+            document.getElementById('withdraw-confirm-modal').style.display = 'flex';
+        }
+        
+        // Открытие модального окна ввода суммы вывода
+        function openWithdrawAmountModal() {
+            document.getElementById('withdraw-amount-modal').style.display = 'flex';
+        }
+        
+        // Закрытие всех модальных окон
+        function closeAllModals() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.style.display = 'none';
+            });
+        }
+        
+        // Конвертация FAP в USDT
+        function convertToUSDT(fapAmount) {
+            return (fapAmount * 0.001).toFixed(2);
+        }
+        
+        // Обновление конверсии USDT
+        function updateUSDTConversion() {
+            const fapAmount = document.getElementById('withdraw-amount').value || 0;
+            const usdtAmount = convertToUSDT(fapAmount);
+            document.getElementById('usdt-conversion').textContent = `В USDT: ${usdtAmount} USDT`;
         }
         
         // Обработка подписки на канал
@@ -524,10 +657,36 @@
             showNotification("Получено 1000 FAP за подписку!");
             
             // Закрываем модальное окно
-            closeModal();
+            closeAllModals();
             
             // Обновляем статус бонуса
             checkBonusAvailability();
+        }
+        
+        // Обработка вывода средств
+        function handleWithdraw() {
+            const withdrawAmount = parseInt(document.getElementById('withdraw-amount').value);
+            
+            if (isNaN(withdrawAmount) || withdrawAmount <= 0) {
+                showNotification("Введите корректную сумму!");
+                return;
+            }
+            
+            if (withdrawAmount > balance) {
+                showNotification("Недостаточно средств!");
+                return;
+            }
+            
+            // Вычитаем сумму вывода
+            balance -= withdrawAmount;
+            document.getElementById('balance').textContent = balance;
+            saveData();
+            
+            // Показываем уведомление
+            showNotification(`Успешно выведено ${withdrawAmount} FAP!`);
+            
+            // Закрываем модальное окно
+            closeAllModals();
         }
         
         // Инициализация
@@ -538,22 +697,42 @@
             setInterval(updatePlayTime, 1000);
             
             // Обработчики для кнопок меню
-            document.getElementById('profile-btn').addEventListener('click', () => showNotification("Профиль пока недоступен"));
+            document.getElementById('profile-btn').addEventListener('click', openProfileModal);
             document.getElementById('upgrades-btn').addEventListener('click', () => showNotification("Улучшения пока недоступны"));
             document.getElementById('daily-btn').addEventListener('click', openDailyModal);
             
             // Обработчик для монеты
             document.getElementById('coin').addEventListener('click', collectCoin);
             
-            // Обработчики для модального окна
-            document.getElementById('close-modal').addEventListener('click', closeModal);
+            // Обработчики для модальных окон
+            document.getElementById('close-daily-modal').addEventListener('click', closeAllModals);
+            document.getElementById('close-profile-modal').addEventListener('click', closeAllModals);
+            document.getElementById('close-withdraw-confirm-modal').addEventListener('click', closeAllModals);
+            document.getElementById('close-withdraw-amount-modal').addEventListener('click', closeAllModals);
+            
+            // Обработчики для профиля
+            document.getElementById('withdraw-btn').addEventListener('click', openWithdrawConfirmModal);
+            document.getElementById('transaction-history-btn').addEventListener('click', () => showNotification("История операций скоро будет доступна"));
+            document.getElementById('referral-btn').addEventListener('click', () => showNotification("Реферальная программа скоро будет доступна"));
+            
+            // Обработчики для подтверждения вывода
+            document.getElementById('confirm-withdraw-btn').addEventListener('click', openWithdrawAmountModal);
+            document.getElementById('cancel-withdraw-btn').addEventListener('click', closeAllModals);
+            
+            // Обработчики для ввода суммы вывода
+            document.getElementById('withdraw-amount').addEventListener('input', updateUSDTConversion);
+            document.getElementById('process-withdraw-btn').addEventListener('click', handleWithdraw);
+            
+            // Обработчик для подписки
             document.getElementById('subscribe-btn').addEventListener('click', handleSubscribe);
             
-            // Закрытие модального окна при клике вне его
-            document.getElementById('daily-modal').addEventListener('click', function(event) {
-                if (event.target === this) {
-                    closeModal();
-                }
+            // Закрытие модальных окон при клике вне их
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function(event) {
+                    if (event.target === this) {
+                        closeAllModals();
+                    }
+                });
             });
         });
         
