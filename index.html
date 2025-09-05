@@ -242,11 +242,19 @@
             transition: all 0.3s;
             font-weight: bold;
             box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
+            margin-bottom: 15px;
         }
         
         .subscribe-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(233, 69, 96, 0.6);
+        }
+        
+        .subscribe-btn:disabled {
+            background: linear-gradient(135deg, #8c8c8c, #4d4d4d);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         
         .close-modal {
@@ -277,6 +285,17 @@
             display: flex;
             justify-content: center;
             align-items: center;
+        }
+        
+        .timer {
+            margin-top: 15px;
+            font-size: 16px;
+            color: #ff8fa3;
+        }
+        
+        .timer span {
+            font-weight: bold;
+            color: #ff6b8a;
         }
     </style>
 </head>
@@ -312,7 +331,7 @@
             <div class="menu-item daily-bonus" id="daily-btn">
                 <div class="menu-icon">🎁</div>
                 <div>Ежедневный бонус</div>
-                <div class="bonus-badge">!</div>
+                <div class="bonus-badge" id="bonus-badge">!</div>
             </div>
         </div>
     </div>
@@ -326,6 +345,7 @@
             <h2>Ежедневный бонус</h2>
             <p>Подпишитесь на наш канал, чтобы получить 1000 FAP монет!</p>
             <button class="subscribe-btn" id="subscribe-btn">Подписаться</button>
+            <div class="timer" id="timer">До следующего бонуса: <span id="countdown">24:00:00</span></div>
         </div>
     </div>
 
@@ -334,7 +354,9 @@
         let totalClicks = 0;
         let totalEarned = 0;
         let startTime = Date.now();
+        let lastBonusTime = 0;
         let tg = window.Telegram.WebApp;
+        let countdownInterval;
         
         // Инициализация WebApp
         tg.expand();
@@ -349,10 +371,14 @@
                 totalClicks = data.totalClicks || 0;
                 totalEarned = data.totalEarned || 0;
                 startTime = data.startTime || Date.now();
+                lastBonusTime = data.lastBonusTime || 0;
                 
-                document.getElementById('balance').textContent = balance.toFixed(1);
+                document.getElementById('balance').textContent = balance;
                 document.getElementById('total-clicks').textContent = totalClicks;
-                document.getElementById('total-earned').textContent = totalEarned.toFixed(1);
+                document.getElementById('total-earned').textContent = totalEarned;
+                
+                // Проверяем, доступен ли бонус
+                checkBonusAvailability();
             }
         }
         
@@ -362,9 +388,54 @@
                 balance: balance,
                 totalClicks: totalClicks,
                 totalEarned: totalEarned,
-                startTime: startTime
+                startTime: startTime,
+                lastBonusTime: lastBonusTime
             };
             localStorage.setItem('fapcoinClickerData', JSON.stringify(data));
+        }
+        
+        // Проверка доступности бонуса
+        function checkBonusAvailability() {
+            const now = Date.now();
+            const twentyFourHours = 24 * 60 * 60 * 1000; // 24 часа в миллисекундах
+            const timeSinceLastBonus = now - lastBonusTime;
+            
+            if (lastBonusTime === 0 || timeSinceLastBonus >= twentyFourHours) {
+                // Бонус доступен
+                document.getElementById('bonus-badge').style.display = 'flex';
+                document.getElementById('subscribe-btn').disabled = false;
+                clearInterval(countdownInterval);
+                document.getElementById('countdown').textContent = "00:00:00";
+            } else {
+                // Бонус недоступен, запускаем таймер
+                document.getElementById('bonus-badge').style.display = 'none';
+                document.getElementById('subscribe-btn').disabled = true;
+                startCountdown(twentyFourHours - timeSinceLastBonus);
+            }
+        }
+        
+        // Запуск обратного отсчета
+        function startCountdown(timeLeft) {
+            clearInterval(countdownInterval);
+            
+            countdownInterval = setInterval(() => {
+                timeLeft -= 1000;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    document.getElementById('bonus-badge').style.display = 'flex';
+                    document.getElementById('subscribe-btn').disabled = false;
+                    document.getElementById('countdown').textContent = "00:00:00";
+                    return;
+                }
+                
+                const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                
+                document.getElementById('countdown').textContent = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
         }
         
         // Показ уведомления
@@ -421,16 +492,12 @@
             
             createClickEffect(event.pageX, event.pageY, amount);
             saveData();
-            
-            // Виброотклик (если доступно)
-            if (tg.isVibrationSupported()) {
-                tg.HapticFeedback.impactOccurred('light');
-            }
         }
         
         // Открытие модального окна для ежедневного бонуса
         function openDailyModal() {
             document.getElementById('daily-modal').style.display = 'flex';
+            checkBonusAvailability();
         }
         
         // Закрытие модального окна
@@ -449,7 +516,8 @@
             document.getElementById('balance').textContent = balance;
             document.getElementById('total-earned').textContent = totalEarned;
             
-            // Сохраняем данные
+            // Сохраняем время получения бонуса
+            lastBonusTime = Date.now();
             saveData();
             
             // Показываем уведомление
@@ -458,8 +526,8 @@
             // Закрываем модальное окно
             closeModal();
             
-            // Убираем значок с кнопки ежедневного бонуса
-            document.querySelector('.bonus-badge').style.display = 'none';
+            // Обновляем статус бонуса
+            checkBonusAvailability();
         }
         
         // Инициализация
